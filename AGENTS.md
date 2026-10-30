@@ -24,7 +24,7 @@ Consequências: `if` de negócio dentro de tela vai para `lib`. Constantes (stat
 
 ## Banco
 
-Projeto Supabase `efetivo-de-obras` (`mzboucinaxkhtxgvlqny`). Todo SQL vira arquivo em `supabase/migrations/`. Depois de migration, atualize `tests/_schema-snapshot.json`. `scripts/seed.mjs` carregou os dados iniciais e não regrava se já houver dados.
+No ar em https://efetivo-obra01.vercel.app (Vercel, projeto `efetivo-obra01`): todo push na `main` publica sozinho. Projeto Supabase `efetivo-de-obras` (`mzboucinaxkhtxgvlqny`). Todo SQL vira arquivo em `supabase/migrations/`. Depois de migration, atualize `tests/_schema-snapshot.json`. `scripts/seed.mjs` carregou os dados iniciais e não regrava se já houver dados.
 
 ## Modo de teste
 

@@ -23,7 +23,7 @@ Colaborador e o lançamento de ponto diário.
 ## O segundo
 - Entidade que se repete: **obra** (hoje Terras 6, Comercial 7 e 8 e Avenida Báltico).
 - Vai existir mais de um? **Sim.** Toda tabela leva a obra, e uma obra nova se abre pela tela Obras, sem mexer em código.
-- Quem vê o quê: **todo mundo aprovado vê todas as obras.** Por isso não existe tabela de acesso por obra. Se um dia o encarregado precisar ver só a obra dele, é aí que ela entra.
+- Quem vê o quê: **todo mundo vê todas as obras.** Por isso não existe tabela de acesso por obra. Se um dia o encarregado precisar ver só a obra dele, é aí que ela entra.
 
 ## Identidade visual
 - Cor principal: âmbar #E8A200 (a mesma do app atual).
