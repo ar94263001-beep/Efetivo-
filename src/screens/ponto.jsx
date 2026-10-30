@@ -118,7 +118,7 @@ function DiaColaboradores({ date, lista, F, lancar }) {
       <thead><tr><th>Colaborador</th><th>Função</th><th>Obra no dia (alterar)</th><th>Lançamento</th><th>Entrada</th><th>Saída</th><th className="num">Horas</th><th>Máquina</th><th>Observação</th></tr></thead>
       <tbody>{lista.map(p => { const r = m[p.id] || {}, h = horas(r), ob = r.obra || p.obra, mid = maqDoDia(r, p, D), mr = mm[mid]
         return <tr key={p.id}>
-          <td>{p.nome}</td>
+          <td>{p.nome}<div className="so-mesa muted" style={{ fontSize: 11, fontWeight: 400 }}>{p.funcao}</div></td>
           <td data-label="Função">{p.funcao}</td>
           <td data-label="Obra no dia"><SelectObra value={ob} obras={obrasNomes} label={`Obra de ${p.nome} no dia`} onChange={v => lancar(date, p.id, { obra: v === p.obra ? '' : v })} />
             {r.obra && r.obra !== p.obra && <div className="muted" style={{ fontSize: 11 }}>cadastro: {p.obra}</div>}</td>

@@ -189,7 +189,7 @@ td input.hm{width:90px;padding:3px 6px;font:500 12.5px var(--mono)}
 .ptcards td.num input{text-align:left}
 td select.pmop,td select.pmob{padding:3px 6px;font-size:12.5px;max-width:240px}
 .ptcards td select.pmop{width:100%}
-@media (min-width:1101px){#tPontoM td:first-child{white-space:normal;min-width:180px} #tPontoM td input.ob{width:170px} #tPontoM td input.hm{width:72px} }
+@media (min-width:1181px){#tPontoM td:first-child{white-space:normal;min-width:180px} #tPontoM td input.ob{width:170px} #tPontoM td input.hm{width:72px} }
 td select.pob,td select.pmq{padding:3px 6px;font-size:12.5px;max-width:220px}
 .mgrid th,.mgrid td{padding:4px 5px;text-align:center;font-size:12px}
 .mgrid th:first-child,.mgrid td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
@@ -207,7 +207,8 @@ td select.pob,td select.pmq{padding:3px 6px;font-size:12.5px;max-width:220px}
 @media (max-width:760px){.kpi{flex-basis:140px}}
 @media (pointer:coarse){ .btn,.chip,.seg button,select,input{min-height:38px} .stt button{min-height:36px;min-width:40px} .btn.small{padding:7px 12px} }
 /* cartões: ponto até tablet; demais tabelas no celular */
-@media (max-width:1100px){
+@media (max-width:1180px){
+  .so-mesa{display:none}
   .ptcards td input.hm{width:100%}
   .ptcards td select.pmop,.ptcards td select.pmob{width:100%;max-width:none}
   .ptwarn{max-width:none}
@@ -278,3 +279,19 @@ td select.pob,td select.pmq{padding:3px 6px;font-size:12.5px;max-width:220px}
 dialog form{margin:0}
 @media (max-width:760px){ .acoes{justify-content:stretch} .acoes .btn{flex:1 1 auto} }
 
+
+/* folha de ponto no computador: tudo visível, sem rolagem lateral */
+@media (min-width:1181px){
+  .wrap.larga{max-width:1640px}
+  .ptcards th,.ptcards td{padding:6px 5px}
+  .ptcards td:first-child{white-space:normal;min-width:150px}
+  .ptcards td select{width:100%;max-width:none}
+  .ptcards .stt button{min-width:30px;padding:4px 3px}
+  #tPonto th:nth-child(2),#tPonto td:nth-child(2){display:none}
+  #tPonto td:nth-child(3){width:112px}
+  #tPonto td input.tm{width:80px}
+  #tPonto td:nth-child(8){width:160px}
+  #tPonto td input.ob,#tPontoM td input.ob{width:100%;min-width:100px}
+  #tPontoM td:nth-child(2){width:112px}
+  #tPontoM td:nth-child(4){width:210px;white-space:normal}
+}

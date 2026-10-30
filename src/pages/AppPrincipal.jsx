@@ -56,7 +56,7 @@ export default function AppPrincipal({ perfil, onSair }) {
   }
 
   return (
-    <div className="wrap">
+    <div className={aba === 'ponto' ? 'wrap larga' : 'wrap'}>
       {USAR_MOCK && <div className="mockbar">Modo de teste: dados de exemplo, nada vai para o banco. As alterações ficam só neste navegador.</div>}
       <header className="top">
         <div>
