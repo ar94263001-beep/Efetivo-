@@ -1,7 +1,7 @@
 # Efetivo de Obras
 
 Controle de efetivo, liberação (ASO + treinamento), alojamento, ponto diário de colaboradores e máquinas, painel e apresentação para a diretoria, das obras da empresa. Quem usa é o escritório e quem lança o ponto nas obras.
-React + Vite + Supabase + Vercel, e uma biblioteca só no app (`@supabase/supabase-js`). Um perfil só: quem tem login aprovado vê e altera tudo (shell em `src/pages/AppPrincipal.jsx`). Login com cadastro aberto e aprovação na aba Equipe.
+React + Vite + Supabase + Vercel, e uma biblioteca só no app (`@supabase/supabase-js`). **Acesso livre por decisão de quem é responsável pelo app (30/10/2026): sem login, quem tem o link vê e altera tudo** (`ACESSO_LIVRE` em `src/lib/dados.js`). O login com aprovação está pronto, desligado; os passos para ligar estão no topo da migration. Shell em `src/pages/AppPrincipal.jsx`.
 
 ## Onde o código novo vai
 
@@ -20,7 +20,11 @@ Consequências: `if` de negócio dentro de tela vai para `lib`. Constantes (stat
 - No ponto, `maq` **ausente** = segue o cadastro de máquinas; `''` = "nenhuma", escolhido de propósito. No banco: `maquina_definida`.
 - Na máquina, `op` ausente = automático (ponto dos colaboradores > cadastro); `''` = nenhum; `'__cad'` = nome do cadastro que não está na lista. No banco: `operador_modo`.
 - `obra` vazia num lançamento = a obra do cadastro. Só se grava a obra quando ela é diferente.
-- A obra é a entidade que se repete: toda tabela de lançamento tem `obra_id`, e obra nova se cria na aba Equipe (ou ao digitar "+ Nova obra" nos formulários). Não existe acesso por obra: decisão de 29/10/2026 (ver `BRIEFING.md`).
+- A obra é a entidade que se repete: toda tabela de lançamento tem `obra_id`, e obra nova se cria na aba Obras (ou ao digitar "+ Nova obra" nos formulários). Não existe acesso por obra: decisão de 29/10/2026 (ver `BRIEFING.md`).
+
+## Banco
+
+Projeto Supabase `efetivo-de-obras` (`mzboucinaxkhtxgvlqny`). Todo SQL vira arquivo em `supabase/migrations/`. Depois de migration, atualize `tests/_schema-snapshot.json`. `scripts/seed.mjs` carregou os dados iniciais e não regrava se já houver dados.
 
 ## Modo de teste
 
@@ -36,5 +40,5 @@ Diff que toca em `src/lib/supabase.js`, `src/lib/dados.js`, políticas RLS ou mi
 
 - No Windows, use `npm.cmd` / `npx.cmd` se o PowerShell bloquear o `npm.ps1`.
 - O Supabase devolve no máximo 1000 linhas por consulta: `dados.js` pagina com `todas()`. Ponto de um mês passa disso.
-- Desde 30/05/2026 tabela nova não abre sozinha: toda migration escreve `grant ... to authenticated`. Nunca `grant all` nem liberar para `anon`.
+- Desde 30/05/2026 tabela nova não abre sozinha: toda migration escreve `grant ... to authenticated`. Nunca `grant all`. A liberação para `anon` existe só por causa do acesso livre e está marcada na migration; tabela nova segue a mesma decisão enquanto ela valer.
 - Datas: `isoOf()` em `regras.js`, nunca `toISOString().split('T')[0]` (pula um dia no fuso do Brasil).

@@ -1,0 +1,8 @@
+{
+  "obras": ["id", "nome", "ativa", "created_at"],
+  "colaboradores": ["id", "obra_id", "nome", "funcao", "situacao", "admissao", "dias", "aso", "treinamento", "alojado", "alojamento", "obs", "seq", "created_at", "updated_at"],
+  "maquinas": ["id", "obra_id", "item", "tipo", "responsavel", "situacao", "placa", "ano", "obs", "seq", "created_at"],
+  "ponto": ["id", "data", "colaborador_id", "obra_id", "st", "entrada", "saida", "maquina_id", "maquina_definida", "obs"],
+  "ponto_maquinas": ["id", "data", "maquina_id", "obra_id", "st", "operador_modo", "operador_id", "horimetro_ini", "horimetro_fim", "obs"],
+  "profiles": ["id", "nome", "email", "aprovado", "created_at"]
+}

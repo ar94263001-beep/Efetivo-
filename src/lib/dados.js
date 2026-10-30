@@ -9,6 +9,8 @@ import { MOCK } from './mockData.js'
 
 // Liga o modo de teste quando não há chaves do Supabase (.env.local / Vercel).
 export const USAR_MOCK = !supabase
+// Sem login por enquanto: quem tem o link usa (decisão de 30/10/2026). Para ligar o login, ver a migration.
+export const ACESSO_LIVRE = true
 
 const ok = data => ({ data, erro: null })
 function traduzir(e) {
@@ -193,15 +195,16 @@ export async function salvarObra(o) {
 }
 
 /* ======================= login e equipe ======================= */
-const PERFIL_TESTE = { id: 'u1', nome: 'Você (modo de teste)', email: 'teste@exemplo.com', aprovado: true }
+const PERFIL_TESTE = { id: 'u1', nome: 'Acesso livre', email: '', aprovado: true }
+const SEM_LOGIN = USAR_MOCK || ACESSO_LIVRE
 
 export async function sessaoAtual() {
-  if (USAR_MOCK) return ok({ user: { id: 'u1', email: PERFIL_TESTE.email } })
+  if (SEM_LOGIN) return ok({ user: { id: 'u1', email: PERFIL_TESTE.email } })
   const { data, error } = await supabase.auth.getSession()
   return error ? falha(error) : ok(data.session)
 }
 export function ouvirSessao(cb) {
-  if (USAR_MOCK) return () => {}
+  if (SEM_LOGIN) return () => {}
   const { data } = supabase.auth.onAuthStateChange((_e, s) => cb(s))
   return () => data.subscription.unsubscribe()
 }
@@ -218,7 +221,7 @@ export async function sair() {
   return q(supabase.auth.signOut())
 }
 export async function meuPerfil(id) {
-  if (USAR_MOCK) return ok(PERFIL_TESTE)
+  if (SEM_LOGIN) return ok(PERFIL_TESTE)
   return q(supabase.from('profiles').select('id, nome, email, aprovado').eq('id', id).maybeSingle())
 }
 export async function listarUsuarios() {

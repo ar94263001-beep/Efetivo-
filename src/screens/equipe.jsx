@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDados } from '../lib/DadosContext.jsx'
-import { listarUsuarios, aprovarUsuario } from '../lib/dados.js'
+import { listarUsuarios, aprovarUsuario, ACESSO_LIVRE } from '../lib/dados.js'
 import { Pill, useToast } from '../components/index.jsx'
 
 export default function Equipe({ perfil }) {
@@ -14,7 +14,7 @@ export default function Equipe({ perfil }) {
     if (r.erro) { toast(r.erro); setUsuarios([]); return }
     setUsuarios(r.data)
   }
-  useEffect(() => { carregar() }, [])
+  useEffect(() => { if (!ACESSO_LIVRE) carregar() }, [])
 
   async function mudar(u, aprovado) {
     if (u.id === perfil.id && !aprovado) return toast('Você não pode tirar o seu próprio acesso.')
@@ -35,7 +35,7 @@ export default function Equipe({ perfil }) {
   const pendentes = (usuarios || []).filter(u => !u.aprovado)
   return (
     <section className="grid">
-      <div className="panel">
+      {!ACESSO_LIVRE && <div className="panel">
         <h2>Logins</h2>
         <div className="sub">Quem cria conta só entra depois de aprovado aqui. {pendentes.length ? `${pendentes.length} aguardando.` : ''}</div>
         {usuarios === null ? <p className="count">Carregando…</p> :
@@ -47,7 +47,7 @@ export default function Equipe({ perfil }) {
                 : <button className="btn small primary" onClick={() => mudar(u, true)}>Aprovar</button>}</td>
             </tr>)}
           </tbody></table></div>}
-      </div>
+      </div>}
       <div className="panel">
         <h2>Obras</h2>
         <div className="sub">Obra nova aparece em todas as telas na hora. Obra encerrada some das listas de escolha, mas o histórico fica.</div>

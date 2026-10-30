@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useDados } from '../lib/DadosContext.jsx'
 import { usePref } from '../lib/usePref.js'
-import { USAR_MOCK } from '../lib/dados.js'
+import { USAR_MOCK, ACESSO_LIVRE } from '../lib/dados.js'
 import { exportarPowerBI } from '../lib/exportar.js'
 import { M_SIT, filtrarPessoas } from '../lib/regras.js'
 import { useToast } from '../components/index.jsx'
@@ -14,7 +14,7 @@ import Qualidade from '../screens/qualidade.jsx'
 import KitPowerBI from '../screens/powerbi.jsx'
 import Equipe from '../screens/equipe.jsx'
 
-const ABAS = [['apres', 'Apresentação'], ['painel', 'Painel'], ['pessoas', 'Colaboradores'], ['ponto', 'Controle de ponto'], ['maq', 'Máquinas'], ['dados', 'Qualidade dos dados'], ['pbi', 'Kit Power BI'], ['equipe', 'Equipe']]
+const ABAS = [['apres', 'Apresentação'], ['painel', 'Painel'], ['pessoas', 'Colaboradores'], ['ponto', 'Controle de ponto'], ['maq', 'Máquinas'], ['dados', 'Qualidade dos dados'], ['pbi', 'Kit Power BI'], ['equipe', ACESSO_LIVRE ? 'Obras' : 'Equipe']]
 const DEF = { obra: '', sit: 'Ativo', status: '', pend: '', aloj: '', alojNome: '', func: '', q: '' }
 const MF_DEF = { tipo: '', sit: '', op: '', q: '' }
 const ordenar = arr => [...new Set(arr)].sort((a, b) => a.localeCompare(b, 'pt-BR'))
@@ -64,10 +64,10 @@ export default function AppPrincipal({ perfil, onSair }) {
           <h1>Efetivo de Obras</h1>
         </div>
         <div className="meta">
-          <span className="sync ok"><i></i><span>{perfil.nome || perfil.email} · {people.length} colaboradores</span></span>
+          <span className="sync ok"><i></i><span>{ACESSO_LIVRE ? '' : `${perfil.nome || perfil.email} · `}{people.length} colaboradores</span></span>
           <div className="acoes">
             <button className="btn" onClick={exportar} disabled={exportando || carregando}>{exportando ? 'Gerando…' : 'Exportar para Power BI'}</button>
-            <button className="btn" onClick={onSair}>Sair</button>
+            {!ACESSO_LIVRE && <button className="btn" onClick={onSair}>Sair</button>}
           </div>
         </div>
       </header>

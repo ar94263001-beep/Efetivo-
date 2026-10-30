@@ -4,8 +4,8 @@
 Controle do efetivo das obras: quem está em cada obra, liberação (ASO + treinamento), alojamento, ponto diário de colaboradores e de máquinas, painel e apresentação para a diretoria. Quem usa é o escritório e quem lança o ponto nas obras.
 
 ## Perfis de usuário
-- **Um perfil só.** Quem tem login aprovado vê e altera tudo, em todas as obras (decisão de 29/10/2026).
-- **Cadastro com aprovação:** a pessoa cria a conta e só entra depois que alguém já aprovado liberar, na tela Equipe.
+- **Acesso livre por enquanto (decisão de 30/10/2026):** sem login. Quem tem o link vê e altera tudo, em todas as obras, sem registro de quem alterou.
+- O login com cadastro e aprovação está pronto e desligado, para quando o acesso precisar fechar.
 
 ## Módulos (cada um = uma tela)
 - Apresentação: slides ao vivo para a diretoria.
@@ -15,14 +15,14 @@ Controle do efetivo das obras: quem está em cada obra, liberação (ASO + trein
 - Máquinas: cadastro e troca de obra.
 - Qualidade dos dados: inconsistências automáticas.
 - Kit Power BI: exportação em Excel e medidas DAX.
-- Equipe: aprovar logins e cadastrar obras.
+- Obras: cadastrar e encerrar obras (vira Equipe, com aprovação de logins, quando o login for ligado).
 
 ## Dado central
 Colaborador e o lançamento de ponto diário.
 
 ## O segundo
 - Entidade que se repete: **obra** (hoje Terras 6, Comercial 7 e 8 e Avenida Báltico).
-- Vai existir mais de um? **Sim.** Toda tabela leva a obra, e uma obra nova se abre pela tela Equipe, sem mexer em código.
+- Vai existir mais de um? **Sim.** Toda tabela leva a obra, e uma obra nova se abre pela tela Obras, sem mexer em código.
 - Quem vê o quê: **todo mundo aprovado vê todas as obras.** Por isso não existe tabela de acesso por obra. Se um dia o encarregado precisar ver só a obra dele, é aí que ela entra.
 
 ## Identidade visual
