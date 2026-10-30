@@ -37,18 +37,11 @@ export default function Ponto({ F }) {
   function mudarDia(n) { const d = new Date(date + 'T12:00:00'); d.setDate(d.getDate() + n); setDate(isoOf(d)) }
   function abrirDia(d) { setDate(d); set('view', 'dia') }
 
-  async function marcarTodos() {
-    if (ehMaq) {
-      const m = D.pontoM[date] || {}, alvo = maquinasDoDia(date).filter(x => !(m[x.id] && m[x.id].st))
-      if (!alvo.length) return toast('Todas as máquinas já têm lançamento neste dia.')
-      const r = await lancarPontoMaq(date, Object.fromEntries(alvo.map(x => [x.id, { st: 'OP' }])))
-      if (!r.erro) toast(`${alvo.length} máquina(s) marcadas como operando.`)
-      return
-    }
-    const m = D.ponto[date] || {}, alvo = pessoasDoDia(date).filter(p => !(m[p.id] && m[p.id].st))
-    if (!alvo.length) return toast('Todos já têm lançamento neste dia.')
-    const r = await lancarPonto(date, Object.fromEntries(alvo.map(p => [p.id, { st: 'P' }])), padrao(date))
-    if (!r.erro) toast(`${alvo.length} marcado(s) como presentes.`)
+  async function marcarMaquinas() {
+    const m = D.pontoM[date] || {}, alvo = maquinasDoDia(date).filter(x => !(m[x.id] && m[x.id].st))
+    if (!alvo.length) return toast('Todas as máquinas já têm lançamento neste dia.')
+    const r = await lancarPontoMaq(date, Object.fromEntries(alvo.map(x => [x.id, { st: 'OP' }])))
+    if (!r.erro) toast(`${alvo.length} máquina(s) marcadas como operando.`)
   }
   function exportar(dias, mensal) {
     const linhas = ehMaq ? linhasPontoMaq(dias, maquinasDoDia, D) : linhasPonto(dias, pessoasDoDia, D)
@@ -76,7 +69,7 @@ export default function Ponto({ F }) {
           {!ehMaq && <span className="grp"><label className="sel">Entrada <input type="time" value={pt.ent} onChange={e => set('ent', e.target.value)} /></label>
             <label className="sel">Saída seg–qui <input type="time" value={pt.sai} onChange={e => set('sai', e.target.value)} /></label>
             <label className="sel">Saída sexta <input type="time" value={pt.saiSex} onChange={e => set('saiSex', e.target.value)} /></label></span>}
-          {ehDia && <button className="btn small primary" onClick={marcarTodos}>{ehMaq ? 'Marcar não lançadas como operando' : 'Marcar não lançados como presentes'}</button>}
+          {ehDia && ehMaq && <button className="btn small primary" onClick={marcarMaquinas}>Marcar não lançadas como operando</button>}
           {ehDia && <button className="btn small" onClick={() => exportar([date], false)}>Exportar dia (CSV)</button>}
           <button className="btn small" onClick={() => exportar(diasLancados(ehMaq ? D.pontoM : D.ponto), true)}>Exportar mês (CSV)</button>
         </div>
