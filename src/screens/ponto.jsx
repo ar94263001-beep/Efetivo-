@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDados } from '../lib/DadosContext.jsx'
 import { usePref } from '../lib/usePref.js'
-import { PT_ST, PT_NAME, PM_ST, PM_NAME, AUSENTE, isoOf, hojeISO, dataBR, pct, horas, pmHoras, mSit, maqDoDia, maqLabel, ptObra, pmObra, opDoDia, opNome, pmAvisos, saiPadrao } from '../lib/regras.js'
+import { FORA_DO_EFETIVO, PT_ST, PT_NAME, PM_ST, PM_NAME, AUSENTE, isoOf, hojeISO, dataBR, pct, horas, pmHoras, mSit, maqDoDia, maqLabel, ptObra, pmObra, opDoDia, opNome, pmAvisos, saiPadrao } from '../lib/regras.js'
 import { baixarCsv, linhasPonto, linhasPontoMaq, exportarEspelho } from '../lib/exportar.js'
 import { diasDoMes, estadoSalvo, horasExtras, resumoDias } from '../lib/espelho.js'
 import { Kpis, Status, SelectObra, CampoTexto, HBars, Pill, useToast } from '../components/index.jsx'
@@ -126,7 +126,7 @@ function Historico({ mes, ehMaq, F, obras, listaDoDia, lista, onDia }) {
     horasDe: ehMaq ? pmHoras : horas, extrasDe: ehMaq ? () => 0 : horasExtras })
   const vistos = dias.filter(d => !d.futuro)
   const soma = k => vistos.reduce((t, d) => t + (d.cont[k] || 0), 0)
-  const lancados = vistos.reduce((t, d) => t + d.lanc, 0)
+  const lancados = vistos.reduce((t, d) => t + d.lanc, 0) - (ehMaq ? 0 : FORA_DO_EFETIVO.reduce((t, k) => t + soma(k), 0))
   const salvosN = vistos.filter(d => d.salvo === 'salvo').length
   const horasMes = Math.round(vistos.reduce((t, d) => t + d.horas, 0) * 10) / 10
   const extrasMes = Math.round(vistos.reduce((t, d) => t + d.extras, 0) * 10) / 10

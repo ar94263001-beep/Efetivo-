@@ -2,8 +2,8 @@
 const C = { titulo: 'FFFFE699', espelho: 'FFE2EFDA', resumo: 'FFD9E1F2', cinza: 'FFD9D9D9', azulClaro: 'FFB4C6E7', branco: 'FFFFFFFF' }
 const LEGENDA = [['P', 'FFB4C6E7', 'PRESENTE'], ['FOLGA', 'FF0070C0', 'FOLGA'], ['N°', 'FFA9D08E', 'QUANTIDADE DE HORAS EXTRAS'], ['F', 'FFFF0000', 'FALTA NÃO JUSTIFICADA'],
   ['A', 'FFFFFF00', 'FALTA JUSTIFICADA C/ ATESTADO'], ['NT', 'FF404040', 'NÃO TRABALHAVA NO PERIODO'], ['OB', 'FF808080', 'OUTRA OBRA'], ['D', 'FF7030A0', 'DEMISSÃO'],
-  ['C', 'FF92D050', 'COMPENSAÇÃO'], ['FE', 'FF00B0F0', 'FÉRIAS'], ['FJ', 'FFFFC000', 'FALTA JUSTIFICADA S/ ATESTADO']]
-const CORES_DIA = { P: 'FFBDD7EE', FOLGA: 'FF0070C0', F: 'FFFF0000', A: 'FFFFFF00', NT: 'FF595959', OB: 'FF808080', D: 'FF7030A0', C: 'FF00B050', FE: 'FF00B0F0', FJ: 'FFFFC000' }
+  ['C', 'FF92D050', 'COMPENSAÇÃO'], ['EC', 'FFA6A6A6', 'EM FASE DE CONTRATAÇÃO'], ['FE', 'FF00B0F0', 'FÉRIAS']]
+const CORES_DIA = { P: 'FFBDD7EE', FOLGA: 'FF0070C0', F: 'FFFF0000', A: 'FFFFFF00', NT: 'FF595959', OB: 'FF808080', D: 'FF7030A0', C: 'FF00B050', EC: 'FFA6A6A6', FE: 'FF00B0F0', FJ: 'FFFFC000' }
 const LINHAS_MINIMAS = 24
 const fina = { style: 'thin', color: { argb: 'FF000000' } }
 const borda = { top: fina, left: fina, bottom: fina, right: fina }
@@ -19,7 +19,9 @@ function preencher(ws, esp, logoId) {
   ws.getRow(13).height = 24
   const pequena = { name: 'Calibri', size: 8 }
 
-  ws.getCell('A1').value = 'LEGENDA:'; ws.getCell('A1').font = { ...pequena, bold: true }
+  // a linha 1 era o título LEGENDA: o modelo tem 11 linhas e o app usa 12 códigos
+  ws.getCell('A1').value = 'FJ'; ws.getCell('A1').fill = fundo('FFFFC000'); ws.getCell('A1').font = pequena; ws.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' }
+  ws.getCell('B1').value = 'FALTA JUSTIFICADA S/ ATESTADO'; ws.getCell('B1').font = pequena
   LEGENDA.forEach(([cod, cor, txt], i) => {
     const a = ws.getCell(i + 2, 1), b = ws.getCell(i + 2, 2)
     a.value = cod; a.fill = fundo(cor); a.font = pequena; a.alignment = { horizontal: 'center', vertical: 'middle' }

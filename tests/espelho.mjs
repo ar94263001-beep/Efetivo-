@@ -22,6 +22,7 @@ conferir('sábado vira número', celulaEspelho(dia('07:00', '16:00'), '2026-10-0
 conferir('atestado vira A', celulaEspelho({ st: 'AT' }, '2026-10-01', 'T', 'T'), 'A')
 conferir('folga vira FOLGA', celulaEspelho({ st: 'FG' }, '2026-10-01', 'T', 'T'), 'FOLGA')
 conferir('em outra obra vira OB', celulaEspelho({ st: 'P', obra: 'C' }, '2026-10-01', 'T', 'T'), 'OB')
+conferir('código da planilha passa direto', celulaEspelho({ st: 'NT' }, '2026-10-01', 'T', 'T'), 'NT')
 conferir('sem lançamento fica vazio', celulaEspelho(undefined, '2026-10-01', 'T', 'T'), '')
 conferir('outubro tem 31 dias', diasDoMes('2026-10').length, 31)
 conferir('domingo paga 110%', diasDoMes('2026-10')[3].pct, 1.1)

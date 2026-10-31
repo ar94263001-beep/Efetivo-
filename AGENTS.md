@@ -27,7 +27,7 @@ Consequências: `if` de negócio dentro de tela vai para `lib`. Constantes (stat
 - Os lançamentos gravam na hora. O botão "Salvar dia" não grava o ponto: marca o dia em `dias_salvos` (por obra e por folha) e abre o dia seguinte.
 - `src/lib/espelho.js` monta o espelho e o histórico; `src/lib/espelhoXlsx.js` desenha o Excel no modelo do "Espelho de Pontos" (ExcelJS do cdnjs, só no clique; logo em `public/logo-espelho.png`).
 - Regras do espelho: domingo 110%, outros dias 60%; a célula mostra o número de horas extras no lugar de P; jornada seg–qui 9h, sexta 8h, fim de semana tudo extra. Feriado não é reconhecido: ajusta-se a linha HORA EXTRA(%) no Excel.
-- A legenda do modelo trocou EC por FE e a linha OBRA por FJ, que são códigos que o app usa.
+- O modelo tem 11 linhas de legenda e o app usa 12 códigos: a linha OBRA virou FE e o título LEGENDA virou FJ. A célula A5 (F) e a A6 (A) não mudam de lugar, porque as fórmulas apontam para elas.
 
 ## Banco
 

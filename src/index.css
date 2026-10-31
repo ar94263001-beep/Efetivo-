@@ -180,6 +180,7 @@ dialog::backdrop{background:rgba(10,14,16,.5)}
 .stt button{font:600 11.5px var(--body);min-width:34px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
 .stt button[aria-pressed="true"]{color:#fff;border-color:transparent}
 .c-P,.c-OP{background:var(--good)!important}.c-PS{background:#5b6b7f!important}.c-SO{background:#8a5cc7!important}.c-QB{background:var(--crit)!important}.c-MN{background:var(--warn)!important}.c-CH{background:var(--series)!important}
+.c-OB{background:#808080!important}.c-NT{background:#404040!important}.c-D{background:#7030a0!important}.c-C{background:#00b050!important}.c-EC{background:#a6a6a6!important}
 .c-F{background:var(--crit)!important}.c-FJ{background:#8a5cc7!important}.c-AT{background:var(--warn)!important}.c-FG{background:#5b6b7f!important}.c-FE{background:var(--series)!important}
 td input.tm{width:84px;padding:3px 6px;font:500 12.5px var(--mono)}
 td input.ob{width:220px;padding:3px 6px}
@@ -288,6 +289,7 @@ dialog form{margin:0}
   .ptcards td select{width:100%;max-width:none}
   .ptcards .stt button{min-width:30px;padding:4px 3px}
   #tPonto th:nth-child(2),#tPonto td:nth-child(2){display:none}
+  #tPonto .stt{flex-wrap:wrap;width:212px}
   #tPonto td:nth-child(3){width:112px}
   #tPonto td input.tm{width:80px}
   #tPonto td:nth-child(8){width:160px}

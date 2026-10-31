@@ -1,11 +1,13 @@
 // Regras do negócio: puras, sem React e sem banco. É aqui que os testes alcançam.
 // "D" é o pacote de dados do momento: { people, machines, ponto, pontoM, maqCad }.
 
-export const PT_ST = [['P','Presente','var(--good)'],['F','Falta','var(--crit)'],['FJ','Falta justificada','#8a5cc7'],['AT','Atestado','var(--warn)'],['FG','Folga','#5b6b7f'],['FE','Férias','var(--series)']]
+export const PT_ST = [['P','Presente','var(--good)'],['F','Falta','var(--crit)'],['FJ','Falta justificada','#8a5cc7'],['AT','Atestado','var(--warn)'],['FG','Folga','#5b6b7f'],['FE','Férias','var(--series)'],['OB','Outra obra','#808080'],['NT','Não trabalhava no período','#404040'],['D','Demissão','#7030a0'],['C','Compensação','#00b050'],['EC','Em fase de contratação','#a6a6a6']]
 export const PT_NAME = Object.fromEntries(PT_ST.map(x => [x[0], x[1]]))
 export const PM_ST = [['OP','Operando','var(--good)'],['PS','Parada sem serviço','#5b6b7f'],['SO','Sem operador','#8a5cc7'],['QB','Quebrada','var(--crit)'],['MN','Manutenção','var(--warn)'],['CH','Chuva','var(--series)']]
 export const PM_NAME = Object.fromEntries(PM_ST.map(x => [x[0], x[1]]))
-export const AUSENTE = ['F','FJ','AT','FG','FE']
+export const AUSENTE = ['F','FJ','AT','FG','FE','OB','NT','D','C','EC']
+// não contam como dia em que a pessoa deveria estar na obra
+export const FORA_DO_EFETIVO = ['NT','D','EC']
 export const M_SIT = ['Em operação','Em manutenção','Parada','Desmobilizada']
 export const SITUACOES = ['Ativo','Desligado']
 export const TIPOS_MAQ = ['Máquinas','Equipamentos','Veículos']

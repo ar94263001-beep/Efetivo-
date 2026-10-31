@@ -64,7 +64,7 @@ export default function KitPowerBI({ onExportar, exportando }) {
           <li><b>Segmentações:</b> Obra, Situação, Status, Alojado e Função no topo da página.</li>
         </ul>
         <h3>5. Documentação</h3>
-        <p>Liberado = ASO e treinamento OK. Ponto diário: P presente, F falta, FJ falta justificada, AT atestado, FG folga, FE férias. Máquinas: OP operando, PS parada sem serviço, SO sem operador, QB quebrada, MN manutenção, CH chuva.</p>
+        <p>Liberado = ASO e treinamento OK. Ponto diário: P presente, F falta, FJ falta justificada, AT atestado, FG folga, FE férias, OB outra obra, NT não trabalhava no período, D demissão, C compensação, EC em fase de contratação. Máquinas: OP operando, PS parada sem serviço, SO sem operador, QB quebrada, MN manutenção, CH chuva.</p>
       </div>
     </section>
   )
