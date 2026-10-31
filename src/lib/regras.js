@@ -99,7 +99,8 @@ export function pontoResumo(arr, ponto, date) {
   arr.forEach(x => { const r = m[x.id]; if (r && r.st) { l++; if (r.st === 'P') p++; if (r.st === 'F') f++ } })
   return { p, f, l }
 }
-export const saiPadrao = (date, sai, saiSex) => new Date(date + 'T12:00:00').getDay() === 5 ? saiSex : sai
+/* seg–qui usa a saída normal; sexta e fim de semana, a saída menor (sábado de 8h, como no espelho) */
+export const saiPadrao = (date, sai, saiSex) => [0, 5, 6].includes(new Date(date + 'T12:00:00').getDay()) ? saiSex : sai
 
 /* junta um lançamento de ponto com a mudança pedida (padrao = { ent, sai, maq } do dia) */
 export function mesclarPonto(cur, patch, padrao) {

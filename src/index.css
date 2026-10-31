@@ -295,3 +295,10 @@ dialog form{margin:0}
   #tPontoM td:nth-child(2){width:112px}
   #tPontoM td:nth-child(4){width:210px;white-space:normal}
 }
+
+/* salvar dia e histórico */
+.salvar-rodape{display:flex;justify-content:flex-end;margin:12px 0 4px}
+.faixa-dia{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:13px}
+.faixa-dia.ok{background:var(--good-bg);color:var(--good)}
+.thist td,.thist th{padding:6px 8px}
+@media (max-width:760px){ .salvar-rodape .btn{width:100%} }

@@ -11,7 +11,7 @@ Controle do efetivo das obras: quem está em cada obra, liberação (ASO + trein
 - Apresentação: slides ao vivo para a diretoria.
 - Painel: indicadores, gráficos e pontos de atenção.
 - Colaboradores: cadastro, troca de obra, ASO, treinamento e alojamento.
-- Controle de ponto: lançamento por dia e por mês, de colaboradores e de máquinas (operador, horímetro).
+- Controle de ponto: lançamento por dia com botão Salvar dia, visão do mês e histórico com análise, de colaboradores e de máquinas. Exporta o espelho de ponto em Excel, no modelo da empresa.
 - Máquinas: cadastro e troca de obra.
 - Qualidade dos dados: inconsistências automáticas.
 - Kit Power BI: exportação em Excel e medidas DAX.

@@ -1,4 +1,6 @@
 // Gera arquivos para baixar: CSV (abre no Excel com acento certo) e o Excel do Power BI.
+import { construirPlanilha } from './espelhoXlsx.js'
+import { montarEspelhos, nomeMes, siglaMes } from './espelho.js'
 import { PT_NAME, PM_NAME, horas, pmHoras, maqDoDia, maqLabel, opNome, pmObra, mSit, operador } from './regras.js'
 
 const BOM = '﻿'
@@ -48,6 +50,27 @@ function carregarXlsx() {
     s.onload = () => res(window.XLSX); s.onerror = () => rej(new Error('Não foi possível baixar o gerador de Excel. Verifique a internet.'))
     document.head.appendChild(s)
   })
+}
+function carregarExcelJS() {
+  if (window.ExcelJS) return Promise.resolve(window.ExcelJS)
+  return new Promise((res, rej) => {
+    const s = document.createElement('script')
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'
+    s.onload = () => res(window.ExcelJS); s.onerror = () => rej(new Error('Não foi possível baixar o gerador de Excel. Verifique a internet.'))
+    document.head.appendChild(s)
+  })
+}
+/* Espelho de ponto do mês, no modelo da planilha: uma aba por obra. Devolve quantas abas gerou. */
+export async function exportarEspelho(mes, obras, D) {
+  const espelhos = montarEspelhos(mes, obras, D)
+  if (!espelhos.length) return 0
+  const ExcelJS = await carregarExcelJS()
+  const logo = await fetch('/logo-espelho.png').then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)
+  const wb = construirPlanilha(ExcelJS, espelhos, siglaMes(mes), logo)
+  const buf = await wb.xlsx.writeBuffer()
+  const sufixo = obras.length === 1 ? obras[0].toUpperCase().replace(/\s+/g, '_') : 'TODAS_AS_OBRAS'
+  baixar(`Espelho_de_Pontos_${nomeMes(mes).replace(' ', '_')}_${sufixo}.xlsx`, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }))
+  return espelhos.length
 }
 export async function exportarPowerBI(D) {
   const XLSX = await carregarXlsx()

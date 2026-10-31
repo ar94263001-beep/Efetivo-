@@ -17,6 +17,7 @@ export function DadosProvider({ children }) {
   const [machines, setMachinesSt] = useState([])
   const [ponto, setPontoSt] = useState({})
   const [pontoM, setPontoMSt] = useState({})
+  const [salvos, setSalvos] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const meses = useRef(new Set())
@@ -33,6 +34,7 @@ export function DadosProvider({ children }) {
     if (r.erro) { meses.current.delete(mes); toast(r.erro); return }
     setPonto(p => ({ ...semMes(p, mes), ...r.data.ponto }))
     setPontoM(p => ({ ...semMes(p, mes), ...r.data.pontoM }))
+    setSalvos(l => [...l.filter(x => !x.data.startsWith(mes)), ...r.data.salvos])
   }
   async function reload() {
     const r = await dados.carregarCadastros()
@@ -100,6 +102,12 @@ export function DadosProvider({ children }) {
     if (r.erro) { setPontoM(p => ({ ...p, [data]: antes })); toast('Não foi possível gravar: ' + r.erro) }
     return r
   }
+  async function salvarDia(data, tipo, nomes) {
+    const r = await dados.salvarDia(data, tipo, nomes)
+    if (r.erro) { toast('Não foi possível salvar o dia: ' + r.erro); return r }
+    setSalvos(l => [...l.filter(x => !(x.data === data && x.tipo === tipo && nomes.includes(x.obra))), ...nomes.map(obra => ({ data, tipo, obra, salvoEm: new Date().toISOString() }))])
+    return r
+  }
   async function salvarObra(o) {
     const r = await dados.salvarObra(o)
     if (r.erro) { toast(r.erro); return r }
@@ -114,7 +122,7 @@ export function DadosProvider({ children }) {
     return [...s].sort((a, b) => a.localeCompare(b, 'pt-BR'))
   }, [obras, people, machines])
 
-  const valor = { obras, obrasNomes, people, machines, ponto, pontoM, D, carregando, erro, reload, carregarMes,
-    salvarColaborador, excluirColaborador, salvarMaquina, excluirMaquina, lancarPonto, lancarPontoMaq, salvarObra }
+  const valor = { obras, obrasNomes, people, machines, ponto, pontoM, salvos, D, carregando, erro, reload, carregarMes,
+    salvarColaborador, excluirColaborador, salvarMaquina, excluirMaquina, lancarPonto, lancarPontoMaq, salvarDia, salvarObra }
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>
 }

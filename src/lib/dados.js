@@ -46,7 +46,7 @@ function mock() {
   try { M = JSON.parse(localStorage.getItem(KEY) || 'null') } catch (_) { M = null }
   if (!M) {
     const nomes = [...new Set([...Object.values(MOCK.colaboradores).map(c => c.obra), ...Object.values(MOCK.maquinas).map(m => m.obra)])]
-    M = { obras: nomes.map((nome, i) => ({ id: 'o' + (i + 1), nome, ativa: true })), colaboradores: MOCK.colaboradores, maquinas: MOCK.maquinas, ponto: {}, pontoM: {},
+    M = { obras: nomes.map((nome, i) => ({ id: 'o' + (i + 1), nome, ativa: true })), colaboradores: MOCK.colaboradores, maquinas: MOCK.maquinas, ponto: {}, pontoM: {}, salvos: [],
       usuarios: [{ id: 'u1', nome: 'Você (modo de teste)', email: 'teste@exemplo.com', aprovado: true }, { id: 'u2', nome: 'Encarregado de exemplo', email: 'encarregado@exemplo.com', aprovado: false }] }
   }
   return M
@@ -106,14 +106,17 @@ export async function carregarCadastros() {
 export async function carregarPonto(mes) {
   if (USAR_MOCK) {
     const m = mock(), so = obj => mes ? Object.fromEntries(Object.entries(obj).filter(([d]) => d.startsWith(mes))) : obj
-    return ok({ ponto: so(m.ponto), pontoM: so(m.pontoM) })
+    return ok({ ponto: so(m.ponto), pontoM: so(m.pontoM), salvos: (m.salvos || []).filter(x => !mes || x.data.startsWith(mes)) })
   }
   const [de, ate] = mes ? intervaloMes(mes) : ['1900-01-01', '2999-12-31']
   const p = await todas(() => supabase.from('ponto').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
   if (p.erro) return p
   const pm = await todas(() => supabase.from('ponto_maquinas').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
   if (pm.erro) return pm
-  return ok({ ponto: agrupar(p.data, 'colaborador_id', dePonto), pontoM: agrupar(pm.data, 'maquina_id', dePontoM) })
+  const sv = await todas(() => supabase.from('dias_salvos').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
+  if (sv.erro) return sv
+  const salvos = sv.data.map(r => ({ data: r.data, tipo: r.tipo, obra: nomeObra(r.obra_id), salvoEm: r.salvo_em }))
+  return ok({ ponto: agrupar(p.data, 'colaborador_id', dePonto), pontoM: agrupar(pm.data, 'maquina_id', dePontoM), salvos })
 }
 
 export async function salvarColaborador(c) {
@@ -179,6 +182,22 @@ export async function salvarPontoMaquinas(data, lancamentos) {
       horimetro_ini: rec.hi || null, horimetro_fim: rec.hf || null, obs: rec.obs || null })
   }
   return q(supabase.from('ponto_maquinas').upsert(linhas, { onConflict: 'data,maquina_id' }))
+}
+
+/* marca o dia como salvo nas obras indicadas. tipo: 'col' (colaboradores) ou 'maq' (máquinas) */
+export async function salvarDia(data, tipo, obras) {
+  const salvoEm = new Date().toISOString()
+  if (USAR_MOCK) {
+    const m = mock()
+    m.salvos = [...(m.salvos || []).filter(x => !(x.data === data && x.tipo === tipo && obras.includes(x.obra))), ...obras.map(obra => ({ data, tipo, obra, salvoEm }))]
+    gravar(); return ok(true)
+  }
+  const linhas = []
+  for (const nome of obras) {
+    const o = await obraId(nome); if (o.erro) return o
+    linhas.push({ data, tipo, obra_id: o.data, salvo_em: salvoEm })
+  }
+  return q(supabase.from('dias_salvos').upsert(linhas, { onConflict: 'data,tipo,obra_id' }))
 }
 
 export async function salvarObra(o) {

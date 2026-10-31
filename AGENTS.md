@@ -22,6 +22,13 @@ Consequências: `if` de negócio dentro de tela vai para `lib`. Constantes (stat
 - `obra` vazia num lançamento = a obra do cadastro. Só se grava a obra quando ela é diferente.
 - A obra é a entidade que se repete: toda tabela de lançamento tem `obra_id`, e obra nova se cria na aba Obras (ou ao digitar "+ Nova obra" nos formulários). Não existe acesso por obra: decisão de 29/10/2026 (ver `BRIEFING.md`).
 
+## Salvar dia, histórico e espelho
+
+- Os lançamentos gravam na hora. O botão "Salvar dia" não grava o ponto: marca o dia em `dias_salvos` (por obra e por folha) e abre o dia seguinte.
+- `src/lib/espelho.js` monta o espelho e o histórico; `src/lib/espelhoXlsx.js` desenha o Excel no modelo do "Espelho de Pontos" (ExcelJS do cdnjs, só no clique; logo em `public/logo-espelho.png`).
+- Regras do espelho: domingo 110%, outros dias 60%; a célula mostra o número de horas extras no lugar de P; jornada seg–qui 9h, sexta 8h, fim de semana tudo extra. Feriado não é reconhecido: ajusta-se a linha HORA EXTRA(%) no Excel.
+- A legenda do modelo trocou EC por FE e a linha OBRA por FJ, que são códigos que o app usa.
+
 ## Banco
 
 No ar em https://efetivo-obra01.vercel.app (Vercel, projeto `efetivo-obra01`): todo push na `main` publica sozinho. Projeto Supabase `efetivo-de-obras` (`mzboucinaxkhtxgvlqny`). Todo SQL vira arquivo em `supabase/migrations/`. Depois de migration, atualize `tests/_schema-snapshot.json`. `scripts/seed.mjs` carregou os dados iniciais e não regrava se já houver dados.
