@@ -57,7 +57,10 @@
     "operador_id",
     "horimetro_ini",
     "horimetro_fim",
-    "obs"
+    "obs",
+    "diesel",
+    "gasolina",
+    "hora_parada"
   ],
   "profiles": [
     "id",
@@ -72,5 +75,11 @@
     "tipo",
     "obra_id",
     "salvo_em"
+  ],
+  "clima_dia": [
+    "id",
+    "data",
+    "obra_id",
+    "clima"
   ]
 }

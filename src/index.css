@@ -304,3 +304,5 @@ dialog form{margin:0}
 .faixa-dia.ok{background:var(--good-bg);color:var(--good)}
 .thist td,.thist th{padding:6px 8px}
 @media (max-width:760px){ .salvar-rodape .btn{width:100%} }
+.clima-dia{margin-bottom:10px}
+@media (min-width:1181px){ #tPontoM td input.hm{width:58px} #tPontoM th{white-space:normal} }

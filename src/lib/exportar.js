@@ -31,10 +31,10 @@ export function linhasPonto(dias, pessoasDoDia, D) {
   return out
 }
 export function linhasPontoMaq(dias, maquinasDoDia, D) {
-  const out = [['Data', 'Dia da semana', 'Prefixo', 'Maquina', 'Obra no dia', 'Obra no cadastro', 'Situacao', 'Operador do dia', 'Operador no cadastro', 'Horimetro inicial', 'Horimetro final', 'Horas maquina', 'Observacao']]
+  const out = [['Data', 'Dia da semana', 'Prefixo', 'Maquina', 'Obra no dia', 'Obra no cadastro', 'Situacao', 'Operador do dia', 'Operador no cadastro', 'Horimetro inicial', 'Horimetro final', 'Horas maquina', 'Diesel', 'Gasolina', 'Hora parada', 'Observacao']]
   dias.forEach(d => maquinasDoDia(d).forEach(x => {
     const r = (D.pontoM[d] || {})[x.id]
-    if (r && r.st) out.push([br(d), diaSemana(d), x.placa || '', x.item, pmObra(x, d, D.pontoM), x.obra || '', PM_NAME[r.st] || r.st, opNome(x, d, D), x.resp || '', r.hi || '', r.hf || '', virgula(pmHoras(r)), r.obs || ''])
+    if (r && r.st) out.push([br(d), diaSemana(d), x.placa || '', x.item, pmObra(x, d, D.pontoM), x.obra || '', PM_NAME[r.st] || r.st, opNome(x, d, D), x.resp || '', r.hi || '', r.hf || '', virgula(pmHoras(r)), r.diesel || '', r.gasolina || '', r.parada || '', r.obs || ''])
   }))
   return out
 }
@@ -75,8 +75,8 @@ export async function exportarEspelho(mes, obras, D) {
   return espelhos.length
 }
 /* RDO do mês de uma obra: uma aba por dia lançado. Devolve quantas abas gerou. */
-export async function exportarRdo(mes, obra, D, salvos) {
-  const dias = montarRdoMes(mes, obra, D, salvos)
+export async function exportarRdo(mes, obra, D, salvos, climas) {
+  const dias = montarRdoMes(mes, obra, D, salvos, climas)
   if (!dias.length) return 0
   const ExcelJS = await carregarExcelJS()
   const logo = await fetch('/logo-espelho.png').then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)

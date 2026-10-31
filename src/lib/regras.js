@@ -9,6 +9,7 @@ export const AUSENTE = ['F','FJ','AT','FG','FE','OB','NT','D','C','EC']
 // não contam como dia em que a pessoa deveria estar na obra
 export const FORA_DO_EFETIVO = ['NT','D','EC']
 export const M_SIT = ['Em operação','Em manutenção','Parada','Desmobilizada']
+export const CLIMAS = ['SOL','NUBLADO','CHUVA PARCIAL','CHUVA']
 export const SITUACOES = ['Ativo','Desligado']
 export const TIPOS_MAQ = ['Máquinas','Equipamentos','Veículos']
 

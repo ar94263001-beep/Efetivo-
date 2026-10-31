@@ -46,7 +46,7 @@ function mock() {
   try { M = JSON.parse(localStorage.getItem(KEY) || 'null') } catch (_) { M = null }
   if (!M) {
     const nomes = [...new Set([...Object.values(MOCK.colaboradores).map(c => c.obra), ...Object.values(MOCK.maquinas).map(m => m.obra)])]
-    M = { obras: nomes.map((nome, i) => ({ id: 'o' + (i + 1), nome, ativa: true })), colaboradores: MOCK.colaboradores, maquinas: MOCK.maquinas, ponto: {}, pontoM: {}, salvos: [],
+    M = { obras: nomes.map((nome, i) => ({ id: 'o' + (i + 1), nome, ativa: true })), colaboradores: MOCK.colaboradores, maquinas: MOCK.maquinas, ponto: {}, pontoM: {}, salvos: [], climas: [],
       usuarios: [{ id: 'u1', nome: 'Você (modo de teste)', email: 'teste@exemplo.com', aprovado: true }, { id: 'u2', nome: 'Encarregado de exemplo', email: 'encarregado@exemplo.com', aprovado: false }] }
   }
   return M
@@ -77,7 +77,7 @@ function dePonto(r) {
   return rec
 }
 function dePontoM(r) {
-  const rec = { st: r.st || '', obra: r.obra_id ? nomeObra(r.obra_id) : '', hi: r.horimetro_ini || '', hf: r.horimetro_fim || '', obs: r.obs || '' }
+  const rec = { st: r.st || '', obra: r.obra_id ? nomeObra(r.obra_id) : '', hi: r.horimetro_ini || '', hf: r.horimetro_fim || '', diesel: r.diesel || '', gasolina: r.gasolina || '', parada: r.hora_parada || '', obs: r.obs || '' }
   if (r.operador_modo === 'nenhum') rec.op = ''
   else if (r.operador_modo === 'cadastro') rec.op = '__cad'
   else if (r.operador_modo === 'colaborador') rec.op = r.operador_id
@@ -106,7 +106,7 @@ export async function carregarCadastros() {
 export async function carregarPonto(mes) {
   if (USAR_MOCK) {
     const m = mock(), so = obj => mes ? Object.fromEntries(Object.entries(obj).filter(([d]) => d.startsWith(mes))) : obj
-    return ok({ ponto: so(m.ponto), pontoM: so(m.pontoM), salvos: (m.salvos || []).filter(x => !mes || x.data.startsWith(mes)) })
+    return ok({ ponto: so(m.ponto), pontoM: so(m.pontoM), salvos: (m.salvos || []).filter(x => !mes || x.data.startsWith(mes)), climas: (m.climas || []).filter(x => !mes || x.data.startsWith(mes)) })
   }
   const [de, ate] = mes ? intervaloMes(mes) : ['1900-01-01', '2999-12-31']
   const p = await todas(() => supabase.from('ponto').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
@@ -116,7 +116,10 @@ export async function carregarPonto(mes) {
   const sv = await todas(() => supabase.from('dias_salvos').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
   if (sv.erro) return sv
   const salvos = sv.data.map(r => ({ data: r.data, tipo: r.tipo, obra: nomeObra(r.obra_id), salvoEm: r.salvo_em }))
-  return ok({ ponto: agrupar(p.data, 'colaborador_id', dePonto), pontoM: agrupar(pm.data, 'maquina_id', dePontoM), salvos })
+  const cl = await todas(() => supabase.from('clima_dia').select('*').gte('data', de).lte('data', ate).order('data').order('id'))
+  if (cl.erro) return cl
+  const climas = cl.data.map(r => ({ data: r.data, obra: nomeObra(r.obra_id), clima: r.clima || '' }))
+  return ok({ ponto: agrupar(p.data, 'colaborador_id', dePonto), pontoM: agrupar(pm.data, 'maquina_id', dePontoM), salvos, climas })
 }
 
 export async function salvarColaborador(c) {
@@ -179,7 +182,7 @@ export async function salvarPontoMaquinas(data, lancamentos) {
     const o = await obraId(rec.obra); if (o.erro) return o
     const modo = rec.op === undefined ? 'auto' : rec.op === '' ? 'nenhum' : rec.op === '__cad' ? 'cadastro' : 'colaborador'
     linhas.push({ data, maquina_id: id, obra_id: o.data, st: rec.st || null, operador_modo: modo, operador_id: modo === 'colaborador' ? rec.op : null,
-      horimetro_ini: rec.hi || null, horimetro_fim: rec.hf || null, obs: rec.obs || null })
+      horimetro_ini: rec.hi || null, horimetro_fim: rec.hf || null, diesel: rec.diesel || null, gasolina: rec.gasolina || null, hora_parada: rec.parada || null, obs: rec.obs || null })
   }
   return q(supabase.from('ponto_maquinas').upsert(linhas, { onConflict: 'data,maquina_id' }))
 }
@@ -198,6 +201,16 @@ export async function salvarDia(data, tipo, obras) {
     linhas.push({ data, tipo, obra_id: o.data, salvo_em: salvoEm })
   }
   return q(supabase.from('dias_salvos').upsert(linhas, { onConflict: 'data,tipo,obra_id' }))
+}
+
+export async function salvarClima(data, obra, clima) {
+  if (USAR_MOCK) {
+    const m = mock()
+    m.climas = [...(m.climas || []).filter(x => !(x.data === data && x.obra === obra)), { data, obra, clima }]
+    gravar(); return ok(true)
+  }
+  const o = await obraId(obra); if (o.erro) return o
+  return q(supabase.from('clima_dia').upsert({ data, obra_id: o.data, clima: clima || null }, { onConflict: 'data,obra_id' }))
 }
 
 export async function salvarObra(o) {

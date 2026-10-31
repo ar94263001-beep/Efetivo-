@@ -12,7 +12,7 @@ const people = [enrich({ id: 'a', nome: 'Ana Lima', funcao: 'Operador', obra: 'T
 const machines = [{ id: 'm1', item: 'Escavadeira', placa: 'EH-1', resp: 'Ana Lima', obra: 'T', situacao: 'Em operação' }, { id: 'm2', item: 'Pipa', placa: 'CMP-1', resp: 'Caio Melo', obra: 'T', situacao: 'Em operação' }, { id: 'm3', item: 'Rolo', placa: 'R-1', resp: 'Fulano Terceiro', obra: 'T', situacao: 'Em operação' }, { id: 'm4', item: 'Velha', placa: 'V-1', resp: '', obra: 'T', situacao: 'Desmobilizada' }, { id: 'm5', item: 'Outra', placa: 'O-1', resp: '', obra: 'C', situacao: 'Em operação' }]
 const dia = '2026-10-01' // quinta
 const ponto = { [dia]: { a: { st: 'P', ent: '07:00', sai: '19:00' }, b: { st: 'P', ent: '07:00', sai: '17:00' }, c: { st: 'F' } }, '2026-10-04': { a: { st: 'P', ent: '07:00', sai: '11:00' } } }
-const pontoM = { [dia]: { m1: { st: 'OP', hi: '100,5', hf: '108' }, m2: { st: 'QB', obs: 'mangueira' } } }
+const pontoM = { [dia]: { m1: { st: 'OP', hi: '100,5', hf: '108', diesel: '50,5', parada: '1' }, m2: { st: 'QB', obs: 'mangueira' } } }
 const D = montarD({ people, machines, ponto, pontoM })
 const r = montarRdoDia(dia, 'T', D, [{ data: dia, tipo: 'col', obra: 'T' }])
 const por = p => r.linhas.find(l => l.prefixo === p)
@@ -26,6 +26,9 @@ conferir('situação da máquina entra na observação', por('CMP-1').obs, 'QUEB
 conferir('terceirizado fora da lista aparece pelo cadastro', por('R-1').nome, 'FULANO TERCEIRO')
 conferir('presente sem máquina entra embaixo', r.linhas[r.linhas.length - 1].nome, 'BETO REIS')
 conferir('quem faltou não entra na mão de obra', r.linhas.some(l => l.nome === 'CAIO MELO'), false)
+conferir('diesel vira número', por('EH-1').diesel, 50.5)
+conferir('hora parada vira número', por('EH-1').parada, 1)
+conferir('clima do dia e da obra', montarRdoDia(dia, 'T', D, [], [{ data: dia, obra: 'T', clima: 'SOL' }, { data: dia, obra: 'C', clima: 'CHUVA' }]).clima, 'SOL')
 conferir('dia salvo fica validado', r.validada, true)
 conferir('dia sem salvar não fica validado', montarRdoDia(dia, 'T', D, []).validada, false)
 conferir('extra de domingo vai para 100%', montarRdoDia('2026-10-04', 'T', D, []).linhas.find(l => l.nome === 'ANA LIMA').he100, 4)

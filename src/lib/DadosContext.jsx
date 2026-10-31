@@ -18,6 +18,7 @@ export function DadosProvider({ children }) {
   const [ponto, setPontoSt] = useState({})
   const [pontoM, setPontoMSt] = useState({})
   const [salvos, setSalvos] = useState([])
+  const [climas, setClimas] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const meses = useRef(new Set())
@@ -35,6 +36,7 @@ export function DadosProvider({ children }) {
     setPonto(p => ({ ...semMes(p, mes), ...r.data.ponto }))
     setPontoM(p => ({ ...semMes(p, mes), ...r.data.pontoM }))
     setSalvos(l => [...l.filter(x => !x.data.startsWith(mes)), ...r.data.salvos])
+    setClimas(l => [...l.filter(x => !x.data.startsWith(mes)), ...r.data.climas])
   }
   async function reload() {
     const r = await dados.carregarCadastros()
@@ -108,6 +110,13 @@ export function DadosProvider({ children }) {
     setSalvos(l => [...l.filter(x => !(x.data === data && x.tipo === tipo && nomes.includes(x.obra))), ...nomes.map(obra => ({ data, tipo, obra, salvoEm: new Date().toISOString() }))])
     return r
   }
+  async function salvarClima(data, obra, clima) {
+    const antes = climas
+    setClimas(l => [...l.filter(x => !(x.data === data && x.obra === obra)), { data, obra, clima }])
+    const r = await dados.salvarClima(data, obra, clima)
+    if (r.erro) { setClimas(antes); toast('Não foi possível gravar o clima: ' + r.erro) }
+    return r
+  }
   async function salvarObra(o) {
     const r = await dados.salvarObra(o)
     if (r.erro) { toast(r.erro); return r }
@@ -122,7 +131,7 @@ export function DadosProvider({ children }) {
     return [...s].sort((a, b) => a.localeCompare(b, 'pt-BR'))
   }, [obras, people, machines])
 
-  const valor = { obras, obrasNomes, people, machines, ponto, pontoM, salvos, D, carregando, erro, reload, carregarMes,
-    salvarColaborador, excluirColaborador, salvarMaquina, excluirMaquina, lancarPonto, lancarPontoMaq, salvarDia, salvarObra }
+  const valor = { obras, obrasNomes, people, machines, ponto, pontoM, salvos, climas, D, carregando, erro, reload, carregarMes,
+    salvarColaborador, excluirColaborador, salvarMaquina, excluirMaquina, lancarPonto, lancarPontoMaq, salvarDia, salvarClima, salvarObra }
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDados } from '../lib/DadosContext.jsx'
 import { usePref } from '../lib/usePref.js'
-import { FORA_DO_EFETIVO, PT_ST, PT_NAME, PM_ST, PM_NAME, AUSENTE, isoOf, hojeISO, dataBR, pct, horas, pmHoras, mSit, maqDoDia, maqLabel, ptObra, pmObra, opDoDia, opNome, pmAvisos, saiPadrao } from '../lib/regras.js'
+import { CLIMAS, FORA_DO_EFETIVO, PT_ST, PT_NAME, PM_ST, PM_NAME, AUSENTE, isoOf, hojeISO, dataBR, pct, horas, pmHoras, mSit, maqDoDia, maqLabel, ptObra, pmObra, opDoDia, opNome, pmAvisos, saiPadrao } from '../lib/regras.js'
 import { baixarCsv, linhasPonto, linhasPontoMaq, exportarEspelho, exportarRdo } from '../lib/exportar.js'
 import { diasDoMes, estadoSalvo, horasExtras, resumoDias } from '../lib/espelho.js'
 import { Kpis, Status, SelectObra, CampoTexto, HBars, Pill, useToast } from '../components/index.jsx'
@@ -13,7 +13,7 @@ const tituloDia = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { w
 const tituloMes = mes => { const [Y, M] = mes.split('-').map(Number); return new Date(Y, M - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) }
 
 export default function Ponto({ F }) {
-  const { people, machines, D, salvos, obrasNomes, carregarMes, lancarPonto, lancarPontoMaq, salvarDia } = useDados()
+  const { people, machines, D, salvos, climas, salvarClima, obrasNomes, carregarMes, lancarPonto, lancarPontoMaq, salvarDia } = useDados()
   const toast = useToast()
   const [pt, setPt] = usePref('efetivo-ponto', PREF)
   const [date, setDate] = useState(hojeISO())
@@ -69,7 +69,7 @@ export default function Ponto({ F }) {
     if (!F.obra) return toast('Escolha uma obra lá em cima para gerar o RDO.')
     setGerando(true)
     try {
-      const n = await exportarRdo(mesAtual, F.obra, D, salvos)
+      const n = await exportarRdo(mesAtual, F.obra, D, salvos, climas)
       toast(n ? `RDO gerado, com ${n} aba(s), uma por dia.` : 'Nenhum dia lançado neste mês para essa obra.')
     } catch (e) { toast(e.message) }
     setGerando(false)
@@ -108,6 +108,11 @@ export default function Ponto({ F }) {
           <button className="btn small" onClick={baixarRdo} disabled={gerando}>{gerando ? 'Gerando…' : 'Exportar RDO diário (Excel)'}</button>
         </div>
       </div>
+      {ehDia && <div className="clima-dia">
+        {F.obra ? <label className="sel">Clima em {F.obra} <select value={(climas.find(c => c.data === date && c.obra === F.obra) || {}).clima || ''} onChange={e => salvarClima(date, F.obra, e.target.value)}>
+          <option value="">—</option>{CLIMAS.map(c => <option key={c}>{c}</option>)}</select></label>
+          : <span className="count">Para lançar o clima do dia, escolha uma obra lá em cima.</span>}
+      </div>}
       {ehDia && <FaixaDia estado={estadoSalvo(salvos, date, tipo, obrasAlvo)} date={date} />}
       {ehHist ? <Historico mes={mes} ehMaq={ehMaq} F={F} obras={obrasAlvo} listaDoDia={ehMaq ? maquinasDoDia : pessoasDoDia} lista={ehMaq ? maquinasDoDia(null) : pessoasDoDia(null)} onDia={abrirDia} /> : ehDia
         ? (ehMaq ? <DiaMaquinas date={date} lista={maquinasDoDia(date)} F={F} /> : <DiaColaboradores date={date} lista={pessoasDoDia(date)} F={F} lancar={lancar} />)
@@ -232,7 +237,7 @@ function DiaMaquinas({ date, lista, F }) {
   return <>
     <Kpis items={kpisMaq(lista, lista.map(x => m[x.id]), tituloDia(date) + (F.obra ? ' · ' + F.obra : ''), true)} />
     <div className="tablewrap"><table id="tPontoM" className="ptcards">
-      <thead><tr><th>Máquina</th><th>Obra no dia (alterar)</th><th>Situação</th><th>Operador do dia</th><th>Horímetro inicial</th><th>Horímetro final</th><th className="num">Horas máq.</th><th>Observação</th></tr></thead>
+      <thead><tr><th>Máquina</th><th>Obra no dia (alterar)</th><th>Situação</th><th>Operador do dia</th><th>Horímetro inicial</th><th>Horímetro final</th><th className="num">Horas máq.</th><th>Diesel (L)</th><th>Gasolina (L)</th><th>Hora parada</th><th>Observação</th></tr></thead>
       <tbody>{lista.map(x => { const r = m[x.id] || {}, o = opDoDia(x, date, D), h = pmHoras(r), ob = pmObra(x, date, D.pontoM), av = pmAvisos(x, date, r.st, D)
         return <tr key={x.id}>
           <td><b>{x.placa || '—'}</b> · {x.item}<div className="muted" style={{ fontSize: 11 }}>cadastro: {x.resp || 'sem operador'} · {x.obra || ''}</div></td>
@@ -248,9 +253,12 @@ function DiaMaquinas({ date, lista, F }) {
           <td data-label="Horímetro inicial"><CampoTexto className="hm" inputMode="decimal" value={r.hi} placeholder="0,0" aria-label="Horímetro inicial" onSave={v => lancar(x.id, { hi: v })} /></td>
           <td data-label="Horímetro final"><CampoTexto className="hm" inputMode="decimal" value={r.hf} placeholder="0,0" aria-label="Horímetro final" onSave={v => lancar(x.id, { hf: v })} /></td>
           <td className="num" data-label="Horas máq.">{h == null ? traco : h.toLocaleString('pt-BR') + ' h'}</td>
+          <td data-label="Diesel (L)"><CampoTexto className="hm" inputMode="decimal" value={r.diesel} placeholder="0" aria-label="Diesel em litros" onSave={v => lancar(x.id, { diesel: v })} /></td>
+          <td data-label="Gasolina (L)"><CampoTexto className="hm" inputMode="decimal" value={r.gasolina} placeholder="0" aria-label="Gasolina em litros" onSave={v => lancar(x.id, { gasolina: v })} /></td>
+          <td data-label="Hora parada"><CampoTexto className="hm" inputMode="decimal" value={r.parada} placeholder="0" aria-label="Horas paradas" onSave={v => lancar(x.id, { parada: v })} /></td>
           <td className="full" data-label="Observação"><CampoTexto className="ob" value={r.obs} placeholder="Ex.: quebrou a mangueira, operador foi para outra obra" aria-label="Observação" onSave={v => lancar(x.id, { obs: v })} /></td>
         </tr> })}
-      {!lista.length && <tr><td colSpan={8} className="muted">Nenhuma máquina com esses filtros.</td></tr>}</tbody>
+      {!lista.length && <tr><td colSpan={11} className="muted">Nenhuma máquina com esses filtros.</td></tr>}</tbody>
     </table></div>
   </>
 }

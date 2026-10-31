@@ -21,7 +21,7 @@ function folha(ws, dia, logoId) {
   put('B2', 'RELATÓRIO DIÁRIO DE OBRA', { name: 'Consolas', size: 14, bold: true })
   put('B4', 'CLIENTE:', mono); put('C4', dia.obra.toUpperCase(), mono)
   put('H2', 'DATA:', { ...mono, bold: true }, { horizontal: 'right' }); put('I2', dataExtenso(dia.iso), { ...mono, bold: true })
-  put('H3', 'CLIMA:', { ...mono, bold: true }, { horizontal: 'right' })
+  put('H3', 'CLIMA:', { ...mono, bold: true }, { horizontal: 'right' }); put('I3', dia.clima || '', { ...mono, bold: true })
   put('H4', 'OBRA:', { ...mono, bold: true }, { horizontal: 'right' }); put('I4', dia.obra.toUpperCase(), mono)
   const st = put('L2', dia.validada ? 'VALIDADA' : 'NÃO VALIDADA', { name: 'Calibri', size: 12, bold: true }, { horizontal: 'center', vertical: 'middle' })
   ws.mergeCells('L2:L3'); st.fill = fundo(dia.validada ? VERDE : 'FFFFC000')
@@ -44,7 +44,7 @@ function folha(ws, dia, logoId) {
     ws.getCell(r, 6).value = { formula: `IF(AND(D${r}<>"",E${r}<>""),E${r}-D${r},"")`, result: l && l.horas != null ? l.horas : '' }
     ws.getCell(r, 6).numFmt = '0.0'
     if (!l) continue
-    const vals = { 2: l.prefixo, 3: l.tipo, 4: l.hi, 5: l.hf, 10: l.obs, 11: l.nome, 12: l.funcao, 13: l.entrada, 14: l.saida, 15: l.he60, 17: l.he100 }
+    const vals = { 2: l.prefixo, 3: l.tipo, 4: l.hi, 5: l.hf, 7: l.diesel, 8: l.gasolina, 9: l.parada, 10: l.obs, 11: l.nome, 12: l.funcao, 13: l.entrada, 14: l.saida, 15: l.he60, 17: l.he100 }
     Object.entries(vals).forEach(([col, v]) => { if (v !== '' && v != null) ws.getCell(r, +col).value = v })
     if (dia.repetidos.includes(l.nome)) { const n = ws.getCell(r, 11); n.fill = fundo(ROSA); n.font = { ...texto, color: { argb: 'FF9C0006' } } }
   }
