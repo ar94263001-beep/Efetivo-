@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDados } from '../lib/DadosContext.jsx'
 import { usePref } from '../lib/usePref.js'
 import { FORA_DO_EFETIVO, PT_ST, PT_NAME, PM_ST, PM_NAME, AUSENTE, isoOf, hojeISO, dataBR, pct, horas, pmHoras, mSit, maqDoDia, maqLabel, ptObra, pmObra, opDoDia, opNome, pmAvisos, saiPadrao } from '../lib/regras.js'
-import { baixarCsv, linhasPonto, linhasPontoMaq, exportarEspelho } from '../lib/exportar.js'
+import { baixarCsv, linhasPonto, linhasPontoMaq, exportarEspelho, exportarRdo } from '../lib/exportar.js'
 import { diasDoMes, estadoSalvo, horasExtras, resumoDias } from '../lib/espelho.js'
 import { Kpis, Status, SelectObra, CampoTexto, HBars, Pill, useToast } from '../components/index.jsx'
 
@@ -65,6 +65,15 @@ export default function Ponto({ F }) {
     } catch (e) { toast(e.message) }
     setGerando(false)
   }
+  async function baixarRdo() {
+    if (!F.obra) return toast('Escolha uma obra lá em cima para gerar o RDO.')
+    setGerando(true)
+    try {
+      const n = await exportarRdo(mesAtual, F.obra, D, salvos)
+      toast(n ? `RDO gerado, com ${n} aba(s), uma por dia.` : 'Nenhum dia lançado neste mês para essa obra.')
+    } catch (e) { toast(e.message) }
+    setGerando(false)
+  }
   function exportar(dias, mensal) {
     const linhas = ehMaq ? linhasPontoMaq(dias, maquinasDoDia, D) : linhasPonto(dias, pessoasDoDia, D)
     if (linhas.length === 1) return toast(mensal ? 'Nenhum lançamento neste mês.' : 'Nenhum lançamento neste dia.')
@@ -96,6 +105,7 @@ export default function Ponto({ F }) {
           {ehDia && <button className="btn small" onClick={() => exportar([date], false)}>Exportar dia (CSV)</button>}
           {ehMaq ? <button className="btn small" onClick={() => exportar(diasLancados(D.pontoM), true)}>Exportar mês (CSV)</button>
             : <button className="btn small" onClick={baixarEspelho} disabled={gerando}>{gerando ? 'Gerando…' : 'Exportar espelho do mês (Excel)'}</button>}
+          <button className="btn small" onClick={baixarRdo} disabled={gerando}>{gerando ? 'Gerando…' : 'Exportar RDO diário (Excel)'}</button>
         </div>
       </div>
       {ehDia && <FaixaDia estado={estadoSalvo(salvos, date, tipo, obrasAlvo)} date={date} />}

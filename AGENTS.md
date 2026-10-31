@@ -28,6 +28,7 @@ Consequências: `if` de negócio dentro de tela vai para `lib`. Constantes (stat
 - `src/lib/espelho.js` monta o espelho e o histórico; `src/lib/espelhoXlsx.js` desenha o Excel no modelo do "Espelho de Pontos" (ExcelJS do cdnjs, só no clique; logo em `public/logo-espelho.png`).
 - Regras do espelho: domingo 110%, outros dias 60%; a célula mostra o número de horas extras no lugar de P; jornada seg–qui 9h, sexta 8h, fim de semana tudo extra. Feriado não é reconhecido: ajusta-se a linha HORA EXTRA(%) no Excel.
 - O modelo tem 11 linhas de legenda e o app usa 12 códigos: a linha OBRA virou FE e o título LEGENDA virou FJ. A célula A5 (F) e a A6 (A) não mudam de lugar, porque as fórmulas apontam para elas.
+- `src/lib/rdo.js` e `src/lib/rdoXlsx.js` geram o RDO: uma aba por dia lançado, de uma obra só. Máquinas com o operador do dia; presentes sem máquina entram embaixo. Clima, diesel, gasolina e hora parada não existem no app e saem em branco. VALIDADA = dia salvo na folha de colaboradores.
 
 ## Banco
 

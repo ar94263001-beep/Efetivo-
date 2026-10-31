@@ -1,5 +1,7 @@
 // Gera arquivos para baixar: CSV (abre no Excel com acento certo) e o Excel do Power BI.
 import { construirPlanilha } from './espelhoXlsx.js'
+import { construirRdo } from './rdoXlsx.js'
+import { montarRdoMes } from './rdo.js'
 import { montarEspelhos, nomeMes, siglaMes } from './espelho.js'
 import { PT_NAME, PM_NAME, horas, pmHoras, maqDoDia, maqLabel, opNome, pmObra, mSit, operador } from './regras.js'
 
@@ -71,6 +73,17 @@ export async function exportarEspelho(mes, obras, D) {
   const sufixo = obras.length === 1 ? obras[0].toUpperCase().replace(/\s+/g, '_') : 'TODAS_AS_OBRAS'
   baixar(`Espelho_de_Pontos_${nomeMes(mes).replace(' ', '_')}_${sufixo}.xlsx`, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }))
   return espelhos.length
+}
+/* RDO do mês de uma obra: uma aba por dia lançado. Devolve quantas abas gerou. */
+export async function exportarRdo(mes, obra, D, salvos) {
+  const dias = montarRdoMes(mes, obra, D, salvos)
+  if (!dias.length) return 0
+  const ExcelJS = await carregarExcelJS()
+  const logo = await fetch('/logo-espelho.png').then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)
+  const wb = construirRdo(ExcelJS, dias, nomeMes(mes), logo)
+  const buf = await wb.xlsx.writeBuffer()
+  baixar(`RDO_${nomeMes(mes).replace(' ', '_')}_${obra.toUpperCase().replace(/\s+/g, '_')}.xlsx`, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }))
+  return dias.length
 }
 export async function exportarPowerBI(D) {
   const XLSX = await carregarXlsx()
